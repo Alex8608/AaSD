@@ -1,6 +1,7 @@
 ﻿#include "lab1.h"
 #include <iostream>
 
+using namespace myset;
 using namespace std;
 
 int main() {

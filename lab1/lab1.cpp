@@ -14,6 +14,10 @@ int main() {
 	auto iset1 = MySet<int>(iarray1, 9);
 	auto iset2 = MySet<int>(iarray2, 5);
 
+	cout << iset1 << endl << iset2 << endl;
+
 	auto fset1 = MySet<float>(farray1, 7);
 	auto fset2 = MySet<float>(farray2, 5);
+
+	cout << fset1 << endl << fset2 << endl;
 }

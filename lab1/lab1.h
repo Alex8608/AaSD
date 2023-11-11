@@ -21,19 +21,19 @@ namespace myset {
 		}
 
 		T* GetUniqueData(T* data, int size, int* newsize) {
-			T* uniquedata = new T[size]();
+			T* unique_data = new T[size]();
 			int i = 0;
 			int j = 0;
 			while (i < size && j < size) {
-				if (ElementIsHere(uniquedata, *newsize, data[j]) == -1) {
-					uniquedata[i] = data[j];
+				if (ElementIsHere(unique_data, *newsize, data[j]) == -1) {
+					unique_data[i] = data[j];
 					*newsize += 1;
 					++i;
 					++j;
 				}
 				else ++j;
 			}
-			return uniquedata;
+			return unique_data;
 		}
 
 		void Sort() {
@@ -64,12 +64,41 @@ namespace myset {
 			delete newsize;
 		}
 
-		int getsize() const {
+		int GetSize() const {
 			return size_;
 		}
 
 		const T* getdata() const {
 			return data_;
 		}
+
+		T& operator[](int index) {
+			if (index < 0 || index >= size_) {
+				throw std::out_of_range("MySet::operator[], index is out of range");
+			}
+			return data_[index];
+		}
+
+		const T& operator[](int index) const {
+			if (index < 0 || index >= size_) {
+				throw std::out_of_range("MySet::operator[] const, index is out of range");
+			}
+			return data_[index];
+		}
+
+		~MySet() {
+			delete[] data_;
+			size_ = 0;
+		}
 	};
+
+	template<typename T>
+	std::ostream& operator<<(std::ostream& out, MySet<T>& set) {
+		for (int i = 0; i < set.GetSize(); ++i)
+		{
+			std::cout << set[i] << " ";
+			if (i == 9) std::cout << "\n";
+		}
+		return out;
+	}
 }

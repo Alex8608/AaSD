@@ -157,34 +157,23 @@ namespace myset {
 
 		MySet& operator+=(const MySet& rhs) {
 			int new_size = size_ + rhs.GetSize();
-
 			T* new_data = new T[new_size]();
-
 			for (int i = 0; i < size_; ++i)
 			{
 				new_data[i] = data_[i];
 			}
-
 			int j = 0;
-
 			for (int i = size_; i < new_size; ++i)
 			{
 				new_data[i] = rhs[j];
 				++j;
 			}
-
 			delete[] data_;
-
 			int* actual_size = new int(0);
-
 			data_ = GetUniqueData(new_data, new_size, actual_size);
-
 			delete[] new_data;
-
 			size_ = *actual_size;
-
 			this->Sort();
-
 			return *this;
 		}
 
@@ -305,5 +294,12 @@ namespace myset {
 			if (i == 9) out << "\n";
 		}
 		return out;
+	}
+
+	template<typename T>
+	MySet<T> FindUniqueElements(T arr1[], int size1, T arr2[], int size2) {
+		auto set1 = MySet<T>(arr1, size1);
+		auto set2 = MySet<T>(arr2, size2);
+		return (set1 - set2) + (set2 - set1);
 	}
 }

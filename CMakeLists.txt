@@ -15,9 +15,11 @@ if(MSVC)
     endif()
 endif()
 
-project ("lab1")
+project ("AaSD")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (lab1 "lab1.cpp" "lab1.h")
+add_executable (lab1 "lab1/lab1.cpp" "lab1/lab1.h")
+
+add_executable (lab2 "lab2/lab2.cpp" "lab2/lab2.h")
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.

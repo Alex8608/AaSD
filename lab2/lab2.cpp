@@ -1,6 +1,7 @@
 #include "lab2.h"
 #include <iostream>
 #include <string>
+#include <fstream>
 
 using namespace mylist;
 using namespace std;
@@ -46,5 +47,24 @@ int main() {
 
 	cout << "list2[0]=" << list2[0]->value_ << endl;
 	list2[0]->value_ = 40;
-	cout << "list2[0]=" << list2[0]->value_ << endl;
+	cout << "list2[0]=" << list2[0]->value_ << endl <<endl;
+
+	LinkedList<string> strlist;
+	strlist.PushTail("C:");
+	strlist.PushTail("AaSD");
+	strlist.PushTail("lab2");
+	strlist.PushTail("file");
+	strlist.PushTail("1.txt");
+	cout << str(strlist) << endl;
+	ifstream file(str(strlist));
+	if (!file.is_open())
+	{
+		cout << "File is not opened" << endl;
+	}
+	else {
+		string filestr;
+		file >> filestr;
+		cout << filestr;
+		file.close();
+	}
 }

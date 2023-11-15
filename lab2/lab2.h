@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <string>
 namespace mylist {
 
 	template<typename T>
@@ -190,5 +191,17 @@ namespace mylist {
 		}
 		out << '\n';
 		return out;
+	}
+
+	std::string str(const LinkedList<std::string>& list) {
+		if (list.GetSize() == 0) {
+			return "";
+		}
+		std::string s = list[0]->value_;
+		for (int i = 1; i < list.GetSize(); ++i)
+		{
+			s += "/" + (list[i]->value_);
+		}
+		return s;
 	}
 }

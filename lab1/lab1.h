@@ -148,7 +148,7 @@ namespace myset {
 			return data_[index];
 		}
 
-		const T& operator[](int index) const {
+		const T operator[](int index) const {
 			if (index < 0 || index >= size_) {
 				throw std::out_of_range("MySet::operator[] const, index is out of range");
 			}

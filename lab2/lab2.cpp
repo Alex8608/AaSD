@@ -18,6 +18,33 @@ int main() {
 	cout << copy_list << endl;
 
 	auto list2 = list;
-	cout << "Size of list2: " << copy_list.GetSize() << endl;
+	cout << "Size of list2=list: " << list2.GetSize() << endl;
 	cout << list2 << endl;
+
+	list.PushHead(1);
+	list.PushHead(2);
+	list.PushHead(3);
+	cout << "Size of list: " << list.GetSize() << endl;
+	cout << list << endl;
+
+	list2.PushTail(list);
+	cout << "Size of list2.PushTail(list): " << list2.GetSize() << endl;
+	cout << list2 << endl;
+
+	list2.PushHead(list);
+	cout << "Size of list2.PushHead(list): " << list2.GetSize() << endl;
+	cout << list2 << endl;
+
+	list2.DeleteNode(50);
+	cout << "Size of list2.DeleteNode(50): " << list2.GetSize() << endl;
+	cout << list2 << endl;
+
+	list2.PopHead();
+	list2.PopTail();
+	cout << "Size of list2.PopHead() and list2.PopTail(): " << list2.GetSize() << endl;
+	cout << list2 << endl;
+
+	cout << "list2[0]=" << list2[0]->value_ << endl;
+	list2[0]->value_ = 40;
+	cout << "list2[0]=" << list2[0]->value_ << endl;
 }

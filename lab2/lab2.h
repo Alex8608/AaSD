@@ -78,6 +78,29 @@ namespace mylist {
 			return p;
 		}
 
+		void PushHead(const T& value) {
+			Node<T>* p = new Node<T>(value);
+			p->next_ = head_;
+			head_ = p;
+			++size_;
+		}
+
+		void PushHead(const LinkedList<T>& rhs) {
+			LinkedList<int> copy(rhs);
+			copy.PushTail(*this);
+			Swap(copy);
+		}
+
+		Node<T>* PopHead() {
+			if (size_ == 0) {
+				return nullptr;
+			}
+			Node<T>* p = head_;
+			head_ = p->next_;
+			--size_;
+			return p;
+		}
+
 		void PushTail(const T& value) {
 			Node<T>* p = new Node<T>(value);
 			if (head_ == nullptr) {
@@ -91,6 +114,56 @@ namespace mylist {
 			}
 			h->next_ = p;
 			++size_;
+		}
+
+		void PushTail(const LinkedList<T>& rhs) {
+			for (int i = 0; i < rhs.GetSize(); i++)
+			{
+				this->PushTail(rhs[i]->value_);
+			}
+		}
+
+		Node<T>* PopTail() {
+			if (size_ == 0) {
+				return nullptr;
+			}
+			Node<T>* h = head_;
+			while (h->next_ != nullptr && h->next_->next_ != nullptr)
+			{
+				h = h->next_;
+			}
+			Node<T>* p = h;
+			if (size_ != 1) {
+				p = p->next_;
+				h->next_ = nullptr;
+			}
+			--size_;
+			return p;
+		}
+
+		void DeleteNode(const T del_value) {
+			Node<T>* h = head_;
+			Node<T>* last_node = nullptr;
+			while (h != nullptr) {
+				if (h->value_ == del_value) {
+					Node<T>* p = h;
+					h = h->next_;
+					if (head_->value_ == del_value) {
+						head_ = h;
+						last_node = head_;
+					}
+					delete p;
+					p = nullptr;
+					--size_;
+					if (last_node != nullptr && last_node != h) {
+						last_node->next_ = h;
+					}
+				}
+				else {
+					last_node = h;
+					h = h->next_;
+				}
+			}
 		}
 
 		~LinkedList() {

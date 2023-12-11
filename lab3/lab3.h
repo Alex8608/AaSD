@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <ctime>
+#include <fstream>
 using namespace std;
 
 struct stats {
@@ -53,8 +54,8 @@ stats& ShakerSort(vector<T>& vec) {
 	int right_mark = control;
 	do {
 		for (int i = left_mark; i < right_mark; i++) {
-			stat.comarison_count += 1;
-			if (vec[i] > vec[i+1]) {
+			stat.comparison_count += 1;
+			if (vec[i] > vec[i + 1]) {
 				swap(vec[i], vec[i + 1]);
 				control = i;
 				stat.copy_count += 3;
@@ -63,7 +64,7 @@ stats& ShakerSort(vector<T>& vec) {
 		right_mark = control;
 
 		for (int i = right_mark; i > left_mark; i--) {
-			stat.comarison_count += 1;
+			stat.comparison_count += 1;
 			if (vec[i] < vec[i - 1]) {
 				swap(vec[i], vec[i - 1]);
 				control = i;
@@ -78,15 +79,20 @@ stats& ShakerSort(vector<T>& vec) {
 
 template<typename T>
 stats& CombSort(vector<T>& vec) {
+	stats stat;
 	double factor = 1.2473309; // фактор уменьшения
 	int step = vec.size() - 1;
 	while (step >= 1) {
 		for (int i = 0; i + step < vec.size(); i++) {
-			if (vec[i] > vec[i + step])	
+			stat.comparison_count += 1;
+			if (vec[i] > vec[i + step]){
 				swap(vec[i], vec[i + step]);
+				stat.copy_count += 1;
+			}
 		}
 		step /= factor;
 	}
+	return stat;
 }
 
 template <typename T>
@@ -123,6 +129,7 @@ ostream& operator<<(ostream& out, vector<T>& data) {
 		if (i != 0 && i % 10 == 0) {
 			cout << endl;
 		}
+		out.width(4);
 		out << data[i] << ' ';
 	}
 	out << endl;
@@ -136,6 +143,11 @@ ostream& operator<<(ostream& out, stats& st) {
 }
 
 ostream& operator<<(ostream& out, MyClass& me) {
-	out << me.get_value() << endl;
+	out << me.get_value();
+	return out;
+}
+
+ofstream& operator<<(ofstream& out, stats& st) {
+	out << st.comparison_count << " " << st.copy_count << '\n';
 	return out;
 }

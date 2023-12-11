@@ -89,3 +89,53 @@ stats& CombSort(vector<T>& vec) {
 	}
 }
 
+template <typename T>
+vector<T> RandomVec(size_t size) {
+	vector<T> vec(size);
+	srand(static_cast<unsigned int>(time(0)));
+	for (size_t i = 0; i < size; ++i) {
+		vec[i] = rand();
+	}
+	return vec;
+}
+
+template <typename T>
+vector<T> SortedVec(size_t size) {
+	vector<T> vec(size);
+	for (size_t i = 0; i < size; ++i) {
+		vec[i] = i;
+	}
+	return vec;
+}
+
+template <typename T>
+vector<T> ReverseSortedVec(size_t size) {
+	vector<T> vec(size);
+	for (size_t i = 0; i < size; ++i) {
+		vec[i] = size - i;
+	}
+	return vec;
+}
+
+template<typename T>
+ostream& operator<<(ostream& out, vector<T>& data) {
+	for (size_t i = 0; i < data.size(); i++) {
+		if (i != 0 && i % 10 == 0) {
+			cout << endl;
+		}
+		out << data[i] << ' ';
+	}
+	out << endl;
+	return out;
+}
+
+ostream& operator<<(ostream& out, stats& st) {
+	out << "comparison_count = " << st.comparison_count << endl;
+	out << "copy_count = " << st.copy_count << endl;
+	return out;
+}
+
+ostream& operator<<(ostream& out, MyClass& me) {
+	out << me.get_value() << endl;
+	return out;
+}

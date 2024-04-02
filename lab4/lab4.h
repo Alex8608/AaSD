@@ -15,7 +15,7 @@ private:
 	Node* _root;
 
 	void swap(MySet& rhs) noexcept {
-		swap(_root, rhs.get_root());
+		std::swap(_root, rhs._root);
 	}
 
 	void copy_data(Node* node) {
@@ -57,6 +57,23 @@ private:
 		return node;
 	}
 
+	void print_preorder(Node* node) {
+		if (node != nullptr) {
+			cout << node->_data << ' ';
+			print_preorder(node->_left);
+			print_preorder(node->_right);
+		}
+		return;
+	}
+
+	void delete_set(Node* node) {
+		if (node != nullptr) {
+			delete_set(node->_left);
+			delete_set(node->_right);
+			delete node;
+		}
+	}
+
 public:
 	MySet() : _root(nullptr) {}
 
@@ -70,22 +87,17 @@ public:
 		return *this;
 	}
 	
-	int* get_root() const {
+	Node* get_root() const {
 		return _root;
 	}
 
-	int* get_root() {
+	Node* get_root() {
 		return _root;
 	}
 
-	bool contains(int key) {
-		Node* node = _root;
-		while (node) {
-			if (key < node->_data) node = node->_left;
-			else if (key > node->_data) node = node->_right;
-			else return true;
-		}
-		return false;
+	void print() {
+		print_preorder(_root);
+		cout << endl;
 	}
 
 	bool insert(int key) {
@@ -118,9 +130,42 @@ public:
 		return true;
 	}
 
+	bool contains(int key) {
+		Node* node = _root;
+		while (node) {
+			if (key < node->_data) node = node->_left;
+			else if (key > node->_data) node = node->_right;
+			else return true;
+		}
+		return false;
+	}
+
 	bool erase(int key) {
 		bool del = false;
 		_root = erase_node(_root, key, del);
 		return del;
 	}
+
+	~MySet() {
+		delete_set(_root);
+	}
 };
+
+void delete_same(MySet& tree, Node* node) {
+	if (node) {
+		delete_same(tree, node->_left);
+		if (tree.contains(node->_data)) tree.erase(node->_data);
+		delete_same(tree, node->_right);
+	}
+}
+
+MySet difference(MySet& lhs, MySet& rhs) {
+	MySet diff(lhs);
+	delete_same(diff, rhs.get_root());
+	return diff;
+}
+
+MySet intersection(MySet& lhs, MySet& rhs) {
+	MySet diff = difference(lhs, rhs);
+	return difference(lhs, diff);
+}

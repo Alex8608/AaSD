@@ -19,7 +19,7 @@ private:
 	}
 
 	void copy_data(Node* node) {
-		if (node != nullptr) {
+		if (node) {
 			this->insert(node->_data);
 			copy_data(node->_left);
 			copy_data(node->_right);
@@ -27,7 +27,7 @@ private:
 	}
 
 	Node* maximum(Node* node) {
-		while (node->_right != nullptr) {
+		while (node->_right) {
 			node = node->_right;
 		}
 		return node;
@@ -58,7 +58,7 @@ private:
 	}
 
 	void print_preorder(Node* node) {
-		if (node != nullptr) {
+		if (node) {
 			cout << node->_data << ' ';
 			print_preorder(node->_left);
 			print_preorder(node->_right);
@@ -67,7 +67,7 @@ private:
 	}
 
 	void delete_set(Node* node) {
-		if (node != nullptr) {
+		if (node) {
 			delete_set(node->_left);
 			delete_set(node->_right);
 			delete node;
@@ -101,7 +101,7 @@ public:
 	}
 
 	bool insert(int key) {
-		if (!_root) {
+		if (_root == nullptr) {
 			_root = new Node(key);
 			return true;
 		}
@@ -110,7 +110,7 @@ public:
 		bool left = false;
 		while (node) {
 			if (key < node->_data) {
-				if (node->_left != nullptr) {
+				if (node->_left) {
 					node = node->_left;
 					continue;
 				}
@@ -118,7 +118,7 @@ public:
 				break;
 			}
 			else if (key > node->_data) {
-				if (node->_right != nullptr) {
+				if (node->_right) {
 					node = node->_right;
 					continue;
 				}

@@ -28,4 +28,6 @@ add_executable (lab4_actions_with_set "lab4/lab4_actions_with_set.cpp" "lab4/lab
 
 add_executable (lab4 "lab4/lab4.cpp" "lab4/lab4.h")
 
+add_executable (lab5 "lab5/lab5.cpp" "lab5/lab5.h")
+
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.

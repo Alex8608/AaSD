@@ -8,15 +8,17 @@ using namespace std;
 const string CHARS = "abcdefghijklmnopqrstuvwxyz";
 
 template<class K, class T>
-struct Pair {
-	K _key;
-	T _value;
-	Pair(K key, T value) : _key(key), _value(value) {}
-	Pair() : _key(K()), _value(T()) {}
-};
-
-template<class K, class T>
 class MyHashTable {
+public:
+	struct Pair {
+		K _key;
+		T _value;
+		bool _flag;
+		Pair(K key, T value) : _key(key), _value(value), _flag(false) {}
+		Pair() : _key(K()), _value(T()), _flag(false) {}
+	};
+
+private:
 	int _capacity;
 	Pair* _data;
 
@@ -100,11 +102,19 @@ public:
 
 	void insert_or_assign(K key, T value) {
 		int index = hash(key);
-		if (_data[index]._key == K()) {
-			_data[index] = Pair(key, value);
+		if (!search(key)) {
+			insert(key, value);
 		}
 		else {
-			_data[index]._value = value;
+			int i = 0;
+			while (true) {
+				if (_data[(index + i) % _capacity]._key == key) {
+					_data[(index + i) % _capacity]._value = value;
+					return;
+				}
+				++i;
+				if ((index + i) % _capacity == index) break;
+			}
 		}
 	}
 
@@ -119,10 +129,11 @@ public:
 		}
 		_data[(index + i) % _capacity]._key = K();
 		_data[(index + i) % _capacity]._value = T();
+		_data[(index + i) % _capacity]._flag = true;
 		return true;
 	}
 
-	bool contains(V value) {
+	bool contains(T value) {
 		for (size_t i = 0; i < _capacity; i++)
 		{
 			if (_data[i]._value == value) return true;
@@ -133,7 +144,7 @@ public:
 	T* search(K key) {
 		int index = hash(key);
 		int i = 0;
-		while (_data[(index + i) % _capacity]._key != K()) {
+		while (_data[(index + i) % _capacity]._key != K() || _data[(index + i) % _capacity]._flag != false) {
 			Pair current = _data[(index + i) % _capacity];
 			if (current._key == key) {
 				return &current._value;
@@ -170,7 +181,7 @@ public:
 	~MyHashTable() {
 		delete[] _data;
 	}
-}
+};
 
 const char T[256] = {
 			 98,  6, 85,150, 36, 23,112,164,135,207,169,  5, 26, 64,165,219,

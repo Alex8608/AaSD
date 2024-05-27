@@ -30,4 +30,6 @@ add_executable (lab4 "lab4/lab4.cpp" "lab4/lab4.h")
 
 add_executable (lab5 "lab5/lab5.cpp" "lab5/lab5.h")
 
+add_executable (lab6 "lab6/lab6.cpp" "lab6/lab6.h")
+
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.

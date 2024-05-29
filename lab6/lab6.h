@@ -11,11 +11,19 @@ using namespace std;
 
 template<typename Vertex, typename Distance = double>
 class Graph {
+public:
+	struct Edge {
+		Vertex from;
+		Vertex to;
+		Distance d;
+		Edge(const Vertex& from, const Vertex& to, const Distance& d) : from(from), to(to), d(d) {};
+	};
+private:
 	unordered_map<Vertex, vector<pair<Vertex, Distance>>> _data;
 
 	bool relax(const Vertex& a, const Vertex& v, unordered_map<Vertex, pair<Vertex, Distance>>& dist_pred) {
 		auto iter = _data.at(a).begin();
-		while (iter->first != a) ++iter;
+		while (iter->first != v) ++iter;
 		if (dist_pred.at(v).second > dist_pred.at(a).second + iter->second) {
 			dist_pred.at(v).second = dist_pred.at(a).second + iter->second;
 			dist_pred.at(v).first = a;
@@ -38,7 +46,7 @@ public:
 
 	bool remove_vertex(const Vertex& v) {
 		if (!has_vertex(v)) return false;
-		for (size_t i = 0; i < _data.size(); ++i)
+		for (Vertex i = 0; i < _data.size(); ++i)
 		{
 			if (i == v) continue;
 			int j = 0;
@@ -86,49 +94,41 @@ public:
 	bool remove_edge(const Vertex& from, const Vertex& to) {
 		if (!has_vertex(from) || !has_vertex(to)) return false;
 		auto iter = _data[from].begin();
-		int i = 0;
-		while (iter != _data[from].end()) {
-			if (iter->first == to) {
-				_data[from].erase(iter);
-				iter = _data[from].begin() + i;
-			}
-			else {
-				++iter;
-				++i;
-			}
-		}
+		while (iter != _data[from].end() && iter->first != to) ++iter;
+		if (iter == _data[from].end()) return false;
+		_data[from].erase(iter);
 		return true;
 	}
 
-	bool remove_edge(const Vertex& from, const Vertex& to, const Distance& d) {
-		if (!has_vertex(from) || !has_vertex(to)) return false;
-		auto it = _data[from].begin();
-		while (it != _data[from].end() && it->first != to && it->second != d) ++it;
-		if (it == _data[from].end()) return false;
-		_data[from].erase(it);
+	bool remove_edge(const Edge& e) {
+		if (!has_vertex(e.from) || !has_vertex(e.to)) return false;
+		auto iter = _data[e.from].begin();
+		while (iter != _data[e.from].end() && !(iter->first == e.to && iter->second == e.d)) ++iter;
+		if (iter == _data[e.from].end()) return false;
+		_data[e.from].erase(iter);
 		return true;
 	}
 
 	bool has_edge(const Vertex& from, const Vertex& to) const {
 		if (!has_vertex(from) || !has_vertex(to)) return false;
-		auto it = _data.at(from).begin();
-		while (it != _data.at(from).end() && it->first != to) ++it;
-		return it != _data.at(from).end();
+		auto iter = _data.at(from).begin();
+		while (iter != _data.at(from).end() && iter->first != to) ++iter;
+		return iter != _data.at(from).end();
 	}
 
-	bool has_edge(const Vertex& from, const Vertex& to, const Distance& d) const {
-		if (!has_vertex(from) || !has_vertex(to)) return false;
-		auto it = _data.at(from).begin();
-		while (it != _data.at(from).end() && !(it->first == to && it->second == d)) ++it;
-		return it != _data.at(from).end();
+	bool has_edge(const Edge& e) const {
+		if (!has_vertex(e.from) || !has_vertex(e.to)) return false;
+		auto iter = _data.at(e.from).begin();
+		while (iter != _data.at(e.from).end() && !(iter->first == e.to && iter->second == e.d)) ++iter;
+		return iter != _data.at(e.from).end();
 	}
 
-	vector<pair<Vertex, Distance>> edges(const Vertex& v) const {
-		vector<pair<Vertex, Distance>> edges;
+	vector<Edge> edges(const Vertex& v) const {
+		vector<Edge> vec;
 		for (auto& e : _data.at(v)) {
-			edges.push_back(e);
+			vec.push_back(Edge(v, e.first, e.second));
 		}
-		return edges;
+		return vec;
 	}
 
 	size_t degree(const Vertex& v) const {
@@ -139,18 +139,19 @@ public:
 		return _data.size();
 	}
 
-	vector<Vertex> walk(const Vertex& start_vertex) {
+	vector<Vertex> walk(const Vertex& start) {
 		vector<bool> visited;
 		for (size_t i = 0; i < _data.size(); i++)
 		{
 			visited.push_back(false);
 		}
-		vector<Vertex> walk;
+		vector<Vertex> vec;
 		queue<Vertex> queue;
-		queue.push(start_vertex);
+		queue.push(start);
+		visited[start] = true;
 		while (!queue.empty()) {
 			Vertex u = queue.front();
-			walk.push_back(u);
+			vec.push_back(u);
 			queue.pop();
 			for (const auto& v : _data[u]) {
 				if (!visited[v.first]) {
@@ -159,12 +160,12 @@ public:
 				}
 			}
 		}
-		return walk;
+		return vec;
 	}
 
-	vector<pair<Vertex, Distance>> shortest_path(const Vertex& from, const Vertex& to) {
+	vector<Edge> shortest_path(const Vertex& from, const Vertex& to) {
 		unordered_map<Vertex, pair<Vertex, Distance>> dist_pred;
-		vector<pair<Vertex, Distance>> path;
+		vector<Edge> path;
 		vector<Vertex> vertices = this->vertices();
 		stack<int> stack;
 		for (auto& e : vertices) {
@@ -182,16 +183,15 @@ public:
 		Vertex finish = to;
 		pair<Vertex, Distance> pred = dist_pred.at(finish);
 		if (pred.second == 1e9) {
-			path.insert(path.begin(), make_pair(finish, pred.second));
+			path.insert(path.begin(), Edge(from, finish, pred.second));
 		}
 		else {
 			while (finish != from) {
-				path.insert(path.begin(), make_pair(finish, pred.second));
+				path.insert(path.begin(), Edge(pred.first, finish, pred.second));
 				finish = pred.first;
 				pred = dist_pred.at(finish);
 			}
 		}
-		path.insert(path.begin(), make_pair(from, 0));
 		return path;
 	}
 
@@ -200,16 +200,18 @@ public:
 		Vertex warehouse = Vertex();
 		Distance max = 1e9;
 		for (auto& from : vertices) {
-			Distance current_max = 0.0;
+			Distance current_max = -1e9;
 			Vertex current_warehouse = Vertex();
 			for (auto& to : vertices) {
-				vector<pair<Vertex, Distance>> path = shortest_path(from, to);
-				Distance d = (path.end() - 1)->second;
-				if (d > current_max && d != 1e9) {
-					current_max = d;
+				if (from != to) {
+					vector<Edge> path = shortest_path(from, to);
+					Distance d = (path.end() - 1)->d;
+					if (d > current_max && d != 1e9) {
+						current_max = d;
+					}
 				}
 			}
-			if (current_max != 0.0 && current_max < max) {
+			if (current_max != -1e9 && current_max < max) {
 				warehouse = from;
 				max = current_max;
 			}

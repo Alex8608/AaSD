@@ -23,6 +23,7 @@ int main() {
 	graph.add_edge(2, 3, 4);
 	graph.add_edge(2, 8, 3);
 	graph.add_edge(3, 4, 2);
+	graph.add_edge(4, 2, -15);
 	graph.add_edge(5, 0, 4);
 	graph.add_edge(5, 1, 5);
 	graph.add_edge(5, 2, 3);
@@ -65,9 +66,12 @@ int main() {
 	}
 	cout << endl << endl;
 
-	auto path = graph.shortest_path(5, 3);
-	for (auto& v : path) {
-		cout << "(" << v.from << ", " << v.to << ")=" << v.d << " -> ";
+	auto path = graph.shortest_path(2, 4);
+	if(path.empty()) cout << "Shortest way is not exist";
+	else {
+		for (auto& v : path) {
+			cout << "(" << v.from << ", " << v.to << ")=" << v.d << " -> ";
+		}
 	}
 
 	cout << endl << endl << graph.optimal_point();

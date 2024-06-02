@@ -21,15 +21,41 @@ public:
 private:
 	unordered_map<Vertex, vector<pair<Vertex, Distance>>> _data;
 
-	bool relax(const Vertex& a, const Vertex& v, unordered_map<Vertex, pair<Vertex, Distance>>& dist_pred) {
-		auto iter = _data.at(a).begin();
-		while (iter->first != v) ++iter;
-		if (dist_pred.at(v).second > dist_pred.at(a).second + iter->second) {
-			dist_pred.at(v).second = dist_pred.at(a).second + iter->second;
-			dist_pred.at(v).first = a;
-			return true;
+	unordered_map<Vertex, pair<Vertex, Distance>> Bellman_Ford_algorithm(const Vertex& from) {
+		unordered_map<Vertex, pair<Vertex, Distance>> shortest_ways;
+		vector<Vertex> vert = vertices();
+		for (auto i : vert) {
+			shortest_ways[i] = make_pair(-1, 1e9);
 		}
-		return false;
+
+		shortest_ways[from].second = 0;
+		vector<Edge> _edges = edges(from);
+		for (auto edge : _edges) {
+			if (shortest_ways[edge.to].second > shortest_ways[from].second + edge.d) {
+				shortest_ways[edge.to].second = shortest_ways[from].second + edge.d;
+				shortest_ways[edge.to].first = from;
+			}
+		}
+
+		for (int i = 0; i < vert.size(); ++i) {
+			vector<Edge> _edges = edges(i);
+			for (auto edge : _edges) {
+				if ((shortest_ways[i].second != 1e9) && shortest_ways[edge.to].second > shortest_ways[i].second + edge.d) {
+					shortest_ways[edge.to].second = shortest_ways[i].second + edge.d;
+					shortest_ways[edge.to].first = i;
+				}
+			}
+		}
+
+		for (auto& [vertex, edges] : _data) {
+			for (auto j : edges) {
+				if ((shortest_ways[vertex].second != 1e9) && shortest_ways[j.first].second > shortest_ways[vertex].second + j.second) {
+					shortest_ways.clear();
+					return shortest_ways;
+				}
+			}
+		}
+		return shortest_ways;
 	}
 public:
 	Graph() {
@@ -46,8 +72,9 @@ public:
 
 	bool remove_vertex(const Vertex& v) {
 		if (!has_vertex(v)) return false;
-		for (Vertex i = 0; i < _data.size(); ++i)
+		for (auto& e : _data)
 		{
+			Vertex i=e.first;
 			if (i == v) continue;
 			int j = 0;
 			auto iter = _data[i].begin();
@@ -164,22 +191,13 @@ public:
 	}
 
 	vector<Edge> shortest_path(const Vertex& from, const Vertex& to) {
-		unordered_map<Vertex, pair<Vertex, Distance>> dist_pred;
+		if (!has_vertex(from) || !has_vertex(to)) throw runtime_error("Vertex is not found.");
+		unordered_map<Vertex, pair<Vertex, Distance>> dist_pred = Bellman_Ford_algorithm(from);
 		vector<Edge> path;
+		if (dist_pred.empty()) {
+			return path;
+		}
 		vector<Vertex> vertices = this->vertices();
-		stack<int> stack;
-		for (auto& e : vertices) {
-			dist_pred[e] = make_pair(-1, 1e9);
-		}
-		dist_pred[from] = make_pair(-1, 0);
-		stack.push(from);
-		while (!stack.empty()) {
-			Vertex u = stack.top();
-			stack.pop();
-			for (auto& v : _data.at(u)) {
-				if (relax(u, v.first, dist_pred)) stack.push(v.first);
-			}
-		}
 		Vertex finish = to;
 		pair<Vertex, Distance> pred = dist_pred.at(finish);
 		if (pred.second == 1e9) {
@@ -205,6 +223,7 @@ public:
 			for (auto& to : vertices) {
 				if (from != to) {
 					vector<Edge> path = shortest_path(from, to);
+					if (path.empty()) continue;
 					Distance d = (path.end() - 1)->d;
 					if (d > current_max && d != 1e9) {
 						current_max = d;
